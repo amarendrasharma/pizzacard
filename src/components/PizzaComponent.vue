@@ -3,15 +3,15 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-md-8 mx-auto">
-					<h3 class="text-primary text-left">
+					<h3 class="text-left" style="color:darkblue">
 						Order
 						<span class="font-weight-bold">Pizza</span>
 					</h3>
 					<div class="mb-4">
-						<div class="d-flex flex-column border">
+						<div class="d-flex flex-column" style="border: 3px solid gray;">
 							<div class="d-flex justify-content-end py-3 align-items-center">
-								<i class="fas fa-pizza-slice" style="font-size:15px"></i>
-								<div class="w-25">Small</div>
+								<i class="fas fa-pizza-slice" style="font-size:15px;color:darkblue;"></i>
+								<div class="w-25 text-uppercase" style="color:darkblue">Small</div>
 								<div class="px-2">
 									<button
 										class="btn btn-primary"
@@ -28,8 +28,8 @@
 								</div>
 							</div>
 							<div class="d-flex justify-content-end py-3 align-items-center">
-								<i class="fas fa-pizza-slice" style="font-size:20px"></i>
-								<div class="w-25">Medium</div>
+								<i class="fas fa-pizza-slice" style="font-size:20px;color:darkblue"></i>
+								<div class="w-25 text-uppercase" style="color:darkblue">Medium</div>
 								<div class="px-2">
 									<button
 										class="btn btn-primary"
@@ -46,8 +46,8 @@
 								</div>
 							</div>
 							<div class="d-flex justify-content-end py-3 align-items-center">
-								<i class="fas fa-pizza-slice" style="font-size:25px"></i>
-								<div class="w-25">Large</div>
+								<i class="fas fa-pizza-slice" style="font-size:25px;color:darkblue"></i>
+								<div class="w-25 text-uppercase" style="color:darkblue">Large</div>
 								<div class="px-2">
 									<button
 										class="btn btn-primary"
@@ -60,19 +60,21 @@
 										class="btn btn-primary"
 										style="border-radius:50%"
 										@click="addLargePizza"
+										:disabled="total >= 1000 ? true : false"
 									>+</button>
 								</div>
 							</div>
-							<div>
-								<hr />
+							<div class="mx-2">
+								<hr class="hr-custom" />
 							</div>
 							<div class="d-flex justify-content-between py-3">
-								<div class="px-3">
-									<i class="fas fa-user-alt"></i> Adults
+								<div class="px-3 font-weight-bold text-primary">
+									<i class="fas fa-user-alt mr-3" style="color:darkblue"></i>
+									<span style="color:darkblue" class="text-uppercase">Adults</span>
 								</div>
 								<div class="px-2">
 									<button
-										:disabled="adult == 1 ? true : false"
+										:disabled="adult == 0? true : false"
 										class="btn btn-primary"
 										style="border-radius:50%"
 										@click="removeAdult"
@@ -82,15 +84,17 @@
 										class="btn btn-primary"
 										style="border-radius:50%"
 										@click.prevent="addAdult"
+										:disabled="total >= 1000 ? true : false"
 									>+</button>
 								</div>
 							</div>
-							<div>
-								<hr />
+							<div class="mx-2">
+								<hr class="hr-custom" />
 							</div>
 							<div class="d-flex justify-content-between py-3">
-								<div class="px-3">
-									<i class="fas fa-child"></i> Children
+								<div class="px-3 font-weight-bold text-primary">
+									<i class="fas fa-child mr-3" style="color:darkblue"></i>
+									<span style="color:darkblue" class="text-uppercase">Children</span>
 								</div>
 								<div class="px-2">
 									<button
@@ -104,16 +108,17 @@
 										class="btn btn-primary"
 										style="border-radius:50%"
 										@click="addChild"
+										:disabled="total >= 1000 ? true : false"
 									>+</button>
 								</div>
 							</div>
 						</div>
 						<div class="d-flex justify-content-between py-3">
-							<div class="px-3">
+							<div class="px-3 h5" style="color:darkblue">
 								Order
-								<span class="font-weight-bold">Total</span>
+								<span class="font-weight-bold" style="color:darkblue">Total</span>
 							</div>
-							<div class="px-3">{{total}}</div>
+							<div class="px-3 h5">{{total}}</div>
 						</div>
 					</div>
 				</div>
@@ -145,45 +150,46 @@
 			};
 		},
 		computed: {
-			total() {
-				if (total < 200 || total > 1000) {
-					alert("You exceed the limit");
-					return;
-				}
+			total(oldVal) {
 				let total =
 					this.spizza.cost * this.spizza.count +
 					this.mpizza.cost * this.mpizza.count +
 					this.lpizza.cost * this.lpizza.count;
+				if (total > 1000) {
+					alert("You exceed the limit");
+					return oldVal;
+				}
+				if (total < 200) {
+					alert("You have to order minimum of 200");
+					return oldVal;
+				}
 				return total;
 			}
 		},
 		methods: {
-			countAdult(countBY) {
-				this.adult = this.adult + countBY;
-			},
-			countChild(countBY) {
-				this.children = this.children + countBY;
-			},
 			addSmallPizza() {
 				if (this.children > 0 && this.adult < 0) {
 					this.adult = this.adult + 1;
 				}
 				this.spizza.count += 1;
-				// this.countChild(1);
 				if (this.spizza.count >= 2) {
 					this.spizza.count = 0;
-					this.addMediumPizza();
+					this.mpizza.count += 1;
 				}
+				this.children += 1;
 			},
 			RemoveSmallPizza() {
 				this.spizza.count -= 1;
+				this.children -= 1;
 			},
 			addMediumPizza() {
-				this.mpizza.count += 1;
-				// this.countAdult(1);
-				if (this.mpizza.count >= 2) {
-					this.mpizza.count = 0;
-					this.addLargePizza();
+				if (this.total < 1000) {
+					this.mpizza.count += 1;
+					if (this.mpizza.count >= 2) {
+						this.mpizza.count = 0;
+						this.addLargePizza();
+					}
+					this.adult += 1;
 				}
 			},
 			removeMediumPizza() {
@@ -197,21 +203,45 @@
 			},
 			removeLargePizza() {
 				this.lpizza.count -= 1;
+				if (this.adult > 2) {
+					this.adult -= 2;
+				}
+				if (this.adult == 1 && this.children >= 4) {
+					this.children -= 4;
+				}
 			},
 			addLargePizza() {
 				this.lpizza.count += 1;
-				this.countAdult(2);
+				this.adult += 2;
 			},
 
 			addChild() {
 				this.children += 1;
+				this.spizza.count += 1;
+				if (this.spizza.count >= 2) {
+					this.spizza.count = 0;
+					this.mpizza.count += 1;
+				}
 				// if(this.children > )
 			},
 			removeChild() {
 				this.children -= 1;
+				if (this.spizza.count > 0) {
+					this.spizza.count -= 1;
+				}
 			},
 			addAdult() {
 				this.adult += 1;
+				if (this.adult >= 1 && this.adult <= 2) {
+					this.mpizza.count += 1;
+				}
+				if (this.mpizza.count >= 2) {
+					this.mpizza.count = 0;
+					this.lpizza.count += 1;
+				}
+				if (this.adult >= 2) {
+					this.lpizza.count += 1;
+				}
 			},
 			removeAdult() {
 				this.adult -= 1;
@@ -221,4 +251,13 @@
 </script>
 
 <style>
+.btn-primary {
+	background-color: darkblue !important;
+}
+.text-primary {
+	color: darkblue !important;
+}
+hr.hr-custom {
+	border: 1px solid gray;
+}
 </style>
